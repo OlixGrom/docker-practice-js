@@ -1,0 +1,44 @@
+version: "3.7"
+
+services:
+  web:
+    build:
+      context:  .
+      dockerfile: ./images/app/Dockerfile
+    working_dir: /home/node/app
+    command: "npm run start"
+    networks:
+      - docker-practice-net
+    volumes:
+      - ../../:/home/node/app
+    depends_on:
+      - db
+      - redis
+    ports:
+      - 8888:8080
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: school
+      POSTGRES_PASSWORD: school
+      POSTGRES_USER: postgres
+    volumes:
+      - ../../db/data/postgres:/var/lib/postgresql/data/
+      - ../../db/data/dump:/db-dump
+    ports:
+      - 5432:5432
+    networks:
+      - docker-practice-net
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    networks:
+      - docker-practice-net
+    restart: always
+
+networks:
+   docker-practice-net:
+
